@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cashea-node-app
+  labels:
+    app: cashea-node
+spec:
+  replicas: 2 # Alta disponibilidad
+  selector:
+    matchLabels:
+      app: cashea-node
+  template:
+    metadata:
+      labels:
+        app: cashea-node
+    spec:
+      containers:
+      - name: node-app
+        image: cashea-node-app:latest
+        ports:
+        - containerPort: 3000
+        # Security Context (Hardening en K8s)
+        securityContext:
+          runAsUser: 1000 # Coincide con el usuario 'node'
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false

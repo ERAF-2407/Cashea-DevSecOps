@@ -1,0 +1,25 @@
+jobs:
+    deploy:
+      runs-on: ubuntu-latest
+      permissions:
+        id-token: write # ¡CRUCIAL! Permite a GH solicitar el token OIDC
+        contents: read
+      steps:
+        # 1. Autenticación con el Rol de IAM (OIDC)
+        - name: Configure AWS Credentials
+          uses: aws-actions/configure-aws-credentials@v4
+          with:
+            role-to-assume: arn:aws:iam::123456789012:role/NombreDeTuRol  # ARN del Rol creado
+            aws-region: us-east-1
+            
+        - uses: actions/checkout@v3
+        
+        # 2. Ejecutar Terraform (Ahora autenticado)
+        - name: Setup Terraform
+          uses: hashicorp/setup-terraform@v2
+          
+        - name: Terraform Apply (Infra as Code)
+          working-directory: ./infra/aws
+          run: |
+            terraform init
+            terraform apply -auto-approve
